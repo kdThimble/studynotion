@@ -18,6 +18,7 @@ async function createSubSection(req, res) {
         message: "Field Missing",
       });
     }
+
     //upload to cloudinary video for getting URL
     const uploadedVideo = await uploadImageToCloudinary(
       video,
@@ -53,11 +54,7 @@ async function createSubSection(req, res) {
   }
 }
 
-const SubSection = require("../models/SubSection.js");
-const Section = require("../models/Section.js");
-const {uploadVideoToCloudinary} = require("../utils/imageUploader.js");
-const {deleteVideoFromCloudinary} = require("../utils/imageUploader.js");
-require("dotenv").config();
+
 
 async function createSubSection(req, res) {
   try {
@@ -148,7 +145,7 @@ async function updateSubSection(req, res) {
       );
       subSection.videoURL = uploadedVideo.secure_url;
 
-      subSection.timeDuration=uploadedVideo.timeDuration
+      
     }
 
     if (title !== undefined) {
@@ -157,6 +154,10 @@ async function updateSubSection(req, res) {
     if (description !== undefined) {
       subSection.description = description
     }
+    if (timeDuration !== undefined) {
+      subSection.timeDuration = timeDuration
+    }
+    
     // subSection.timeDuration = updatedTimeDuration;
 
     await subSection.save();
@@ -215,3 +216,5 @@ async function deleteSubSection(req, res) {
     });
   }
 }
+
+module.exports = { createSubSection, updateSubSection, deleteSubSection };

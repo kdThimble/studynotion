@@ -1,7 +1,8 @@
 const User = require("../models/User.js");
-const mailSender = require("../config/nodemailer.js");
+
 const bcrypt = require("bcrypt");
 const mailSender = require("../utils/mailsender.js");
+const passwordReset = require("../mail/templates/passwordReset.js");
 async function resetPasswordToken(req,res) {
   try {
     //get email from req body
@@ -22,13 +23,14 @@ async function resetPasswordToken(req,res) {
       { resetPasswordToken: resetPasswordToken, resetPasswordExpires: Date.now() + 5 * 60 * 1000 },
       { new: true }
     );
+
     //create URL
     const url = `http://localhost:5173/update-password/${resetPasswordToken}`;
     //send mail
     await mailSender(
       email,
       "Password Reset Email From StudyNotion",
-      `The Link To Reset Your Password is : ${url}`
+      passwordReset(updatedDetails?.firstName, url)
     );
     //response send
     return res.status(200).json({

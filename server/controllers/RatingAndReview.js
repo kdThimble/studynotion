@@ -1,4 +1,4 @@
-const RatingAndReviews = require("../models/RatingAndReview");
+const RatingAndReviews = require("../models/RatingAndReiew");
 const User = require("../models/User");
 const Course = require("../models/Course");
 
@@ -38,7 +38,7 @@ async function createRatingAndReviews(req, res) {
     });
     const updatedCourse = await Course.findByIdAndUpdate(courseId, {
       $push: { ratingAndReviews: ratingReview._id },
-    });
+    },{new:true});
     console.log(updatedCourse);
     //return success response
     return res.status(200).json({
@@ -65,7 +65,7 @@ async function getAvgRating(req, res) {
       {
         $group: {
           _id: null,
-          averageRating: { $avg: "rating" },
+          averageRating: { $avg: "$rating" },
         },
       },
     ]);
@@ -91,7 +91,56 @@ async function getAvgRating(req, res) {
     });
   }
 }
-//course specific all rating and review
+//course specific all rating and review 
+
+
+async function getCourseRatingAndReviews(req, res) {
+    try {
+        const { courseId } = req.body;
+
+        // Ensure courseId is valid (additional validation might be needed)
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid courseId",
+            });
+        }
+
+        const allCourseReviews = await RatingAndReviews.find({ course: courseId })
+            .sort({ rating: "desc" })
+            .populate({
+                path: "user",
+                select: "firstName lastName email image",
+            })
+            .populate({
+                path: "course",
+                select: "courseName",
+            });
+
+        if (allCourseReviews.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: "No reviews for this course yet",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: allCourseReviews,
+        });
+
+    } catch (error) {
+        console.error("Error fetching Course Ratings and Reviews:", error); // Log the error for debugging
+
+        return res.status(500).json({
+            success: false,
+            message: "Cannot get Course Ratings and Reviews",
+        });
+    }
+}
+
+
+
 
 //getAllRatingAndReviews for home page (it includes diff courses aswell)
 async function getAllRatingAndReviews(req, res) {
@@ -118,4 +167,4 @@ async function getAllRatingAndReviews(req, res) {
   }
 }
 
-module.exports = { createRatingAndReviews, getAvgRating ,getAllRatingAndReviews};
+module.exports = { createRatingAndReviews, getAvgRating ,getAllRatingAndReviews,getCourseRatingAndReviews};

@@ -209,6 +209,7 @@ async function login(req, res) {
           success: true,
           message: "Logged In Successfully",
           user,
+          token,
         });
     }
     //If passwords are not matching
