@@ -11,7 +11,7 @@ function CodeBlocks({
   ctabtn1,
   ctabtn2,
   codeblock,
-  backgroundGradient,
+  gradientimg,
   codeColor,
 }) {
   return (
@@ -21,9 +21,9 @@ function CodeBlocks({
         {heading}
         <div >{subheading}</div>
               
-              <div className="flex gap-7 mt-7">
+              <div className="flex md:flex-row flex-col gap-7 mt-7">
         <CTAButton active={ctabtn1.active} linkto={ctabtn1.linkto}>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center justify-center text-sm md:text-base ">
             {ctabtn1.text}
             <FaArrowRight />
           </div>
@@ -35,26 +35,31 @@ function CodeBlocks({
           </div>
           {/* //section 2 */}
           <div className=" relative flex gap-10 md:w-1/2 w-full bg-[#050f1d] p-4 rounded-lg">
-              {/* <div className="absolute top-[-1rem] left-1 w-[300px] h-[250px] rounded-full bg-gradient-to-r from-yellow-400 to-blue-500 opacity-20"></div> */}
-              <div className="flex flex-col w-[10%] md:text-base text-[14px] font-inter font-bold text-center text-richblack-400">
-                  <p>1</p>
-                  <p>2</p>
-                  <p>3</p>
-                  <p>4</p>
-                  <p>5</p>
-                  <p>6</p>
-                  <p>7</p>
-                  <p>8</p>
-                  <p>9</p>
-                  <p>10</p>
-                  <p>11</p>
+             <img
+          className="absolute left-[-150px] top-[-100px]"
+          width={500}
+          src={gradientimg}
+        />
+              <div className="flex flex-col w-[2%] md:text-base text-[14px] font-inter font-bold text-center text-richblack-400">
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
+                  <p></p>
               </div>
               <div className={`font-mono w-[90%] md:text-base text-[12px] flex flex-col gap-2 font-bold ${codeColor} pr-2`}>
                   <TypeAnimation sequence={[codeblock, 2000, ""]} repeat={Infinity} cursor={true}
                       style={{
                       whiteSpace:"pre-line"
                       }}
-                      omitDeletionAnimation={true}
+            omitDeletionAnimation={true}
+            className="font-mono font-bold text-transparent bg-gradient-to-r from-[#ffffff] to-[#3fd1c2] bg-clip-text"
                   />
               </div>
               
