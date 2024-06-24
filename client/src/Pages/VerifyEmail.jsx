@@ -20,8 +20,10 @@ function VerifyEmail() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+    console.log("user data", signupData);
 
-  const handleVerifyAndSignup = (e) => {
+    const handleVerifyAndSignup = (e) => {
+        console.log("OTP", otp);
     e.preventDefault();
     const {
       accountType,

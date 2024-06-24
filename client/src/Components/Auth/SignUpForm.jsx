@@ -32,7 +32,11 @@ function SignUpForm() {
       toast.error("Passwords Don't Match");
     }
     else {
-      dispatch(setSignupData(formData));
+      const signupData = {
+        ...formData,
+        accountType
+      }
+      dispatch(setSignupData(signupData));
     
       dispatch(sendOtp(formData.email, navigate));
       setFormData({
