@@ -34,7 +34,7 @@ function CodeBlocks({
       </div>
           </div>
           {/* //section 2 */}
-          <div className=" relative flex gap-10 md:w-1/2 w-full bg-[#050f1d] p-4 rounded-lg">
+          <div className=" min-h-[370px] md:min-h-[300px] relative flex gap-10 md:w-1/2 xl:w-[45%] w-full bg-[#050f1d] p-4 rounded-lg">
              <img
           className="absolute left-[-150px] top-[-100px]"
           width={500}
@@ -53,7 +53,7 @@ function CodeBlocks({
                   <p></p>
                   <p></p>
               </div>
-              <div className={`font-mono w-[90%] md:text-base text-[12px] flex flex-col gap-2 font-bold ${codeColor} pr-2`}>
+              <div className={`font-mono w-[80%] md:text-base text-[12px] flex flex-col gap-2 font-bold ${codeColor} pr-2`}>
                   <TypeAnimation sequence={[codeblock, 2000, ""]} repeat={Infinity} cursor={true}
                       style={{
                       whiteSpace:"pre-line"
