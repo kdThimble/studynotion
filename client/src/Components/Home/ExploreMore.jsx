@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { HomePageExplore } from "../../data/homepage-explore";
 import CourseCard from "./CourseCard";
-import HighlightText from "./Reusable/HighlightText";
+import HighlightText from "../Reusable/HighlightText";
 
 
 const tabsName = [

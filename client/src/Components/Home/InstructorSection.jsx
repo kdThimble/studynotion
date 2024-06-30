@@ -2,8 +2,8 @@ import React from 'react'
 import Instructor from "../../assets/Images/Instructor.png"
 
 import { FaArrowRight } from 'react-icons/fa'
-import HighlightText from './Reusable/HighlightText'
-import CTAButton from './Reusable/CTAButton'
+import HighlightText from '../Reusable/HighlightText'
+import CTAButton from '../Reusable/CTAButton'
 
 const InstructorSection = () => {
   return (

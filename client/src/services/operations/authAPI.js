@@ -107,7 +107,7 @@ export function login(email, password, navigate) {
       dispatch(setUser({ ...response.data.user, image: userImage }))
         localStorage.setItem("token", JSON.stringify(response.data.token))
         localStorage.setItem("user", JSON.stringify({ ...response.data.user, image: userImage }));
-      navigate("/")
+      navigate("/dashboard/my-profile")
     } catch (error) {
       console.log("LOGIN API ERROR............", error)
       toast.error("Login Failed")
@@ -154,7 +154,7 @@ export function getPasswordResetToken(email , setEmailSent) {
   }
 }
 
-export function resetPassword(password, confirmPassword, token) {
+export function resetPassword(password, confirmPassword, token,navigate) {
   return async(dispatch) => {
     dispatch(setLoading(true));
     try{
@@ -168,6 +168,7 @@ export function resetPassword(password, confirmPassword, token) {
       }
 
       toast.success("Password has been reset successfully");
+      navigate("/login");
     }
     catch(error) {
       console.log("RESET PASSWORD TOKEN Error", error);

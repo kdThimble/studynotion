@@ -107,7 +107,7 @@ const Navbar = () => {
                           <AiOutlineShoppingCart className='text-white' size={30} />
                           {
                               totalItems > 0 ? (
-                                  <span className=' text-[11px] absolute bg-pure-greys-200 text-center rounded-full h-4 w-4 top-0 right-0 text-white'>{totalItems}</span>
+                                  <span className=' text-[11px] absolute bg-puregreys-200 text-center rounded-full h-4 w-4 top-0 right-0 text-white'>{totalItems}</span>
                               ): null
                           }
 

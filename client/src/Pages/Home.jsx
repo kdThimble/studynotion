@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
-import HighlightText from "../Components/Home/Reusable/HighlightText";
-import CTAButton from "../Components/Home/Reusable/CTAButton";
+import HighlightText from "../Components/Reusable/HighlightText";
+import CTAButton from "../Components/Reusable/CTAButton";
 import banner from "../assets/Images/banner.mp4";
 import gradientyellow from "../assets/Images/gradientyellow.svg";
 import gradientblue from "../assets/Images/gradientblue.svg";
@@ -104,7 +104,7 @@ const Home = () => {
 
       {/* Section 2 */}
 
-      <div className="bg-pure-greys-25 text-richblack-700 ">
+      <div className="bg-puregreys-25 text-richblack-700 ">
         <div className="homepage_bg flex h-[150px] md:h-[300px]">
           <div className="w-11/12 max-w-maxContent flex justify-center items-center gap-5 mx-auto">
             <div className="flex gap-7 text-sm md:text-base text-white">

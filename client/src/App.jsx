@@ -7,6 +7,15 @@ import Navbar from './Components/Navbar/Navbar'
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
 import VerifyEmail from './Pages/VerifyEmail'
+import ForgotPassword from './Pages/ForgotPassword'
+import UpdatePassword from './Components/UpdatePassword'
+import About from './Pages/About'
+import Contact from './Pages/Contact'
+import ErrorPage from './Pages/Error'
+import Dashboard from './Pages/Dashboard'
+import MyCourses from './Components/Dashboard/MyCourses'
+import MyProfile from './Components/Dashboard/MyProfile'
+import Settings from './Components/Dashboard/Settings'
 
 function App() {
  
@@ -20,9 +29,20 @@ function App() {
         <Route path="/signup" element={<Signup /> }/>
         <Route path="/login" element={<Login /> }/>
         <Route path="/verify-email" element={<VerifyEmail /> }/>
-        {/* <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/contact" element={<Contact />} /> */}
+        <Route path="/forgot-password" element={<ForgotPassword /> }/>
+        <Route path="/update-password/:resetPasswordToken" element={<UpdatePassword /> }/>
+        <Route path="/about" element={<About />} />
+        {/* <Route path="/services" element={<Services />} /> */}
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route element={<Dashboard />} >
+            <Route path="/dashboard/enrolled-courses" element={<MyCourses />} />
+            <Route path="/dashboard/my-profile" element={<MyProfile />} />
+            <Route path="/dashboard/settings" element={<Settings />} />
+            </Route>
+
+     
+          <Route path="*" element={<ErrorPage />} />
       </Routes>
       </div>
     </>

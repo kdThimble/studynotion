@@ -1,7 +1,7 @@
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
-import CTAButton from "./Reusable/CTAButton";
-import HighlightText from "./Reusable/HighlightText";
+import CTAButton from "../Reusable/CTAButton";
+import HighlightText from "../Reusable/HighlightText";
 import { TypeAnimation } from "react-type-animation";
 
 function CodeBlocks({
