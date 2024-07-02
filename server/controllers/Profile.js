@@ -6,36 +6,79 @@ require("dotenv").config();
 
 async function updateProfile(req, res) {
   try {
-    const { dateOfBirth = "", gender, contactNumber, about = "" } = req.body;
-    //userid nikal lo
-    const id = req.user.id;
-    //validate
-    if (!id || !contactNumber || !gender) {
+    const {
+      firstName = "",
+      lastName = "",
+      dateOfBirth = "",
+      gender,
+      contactNumber,
+      about = "",
+    } = req.body;
+    const userId = req.user.id; // Assuming user ID is available in req.user.id
+
+    // Validate required fields
+    if (!userId || !contactNumber || !gender) {
       return res.status(400).json({
         success: false,
         message: "All fields Required",
       });
     }
-    //find Profile
-    const userDetails = await User.findById(id);
-    const profileId = userDetails.additionalDetails;
-    const profileDetails = await Profile.findById(profileId);
 
-    //updateProfile
-    profileDetails.dateOfBirth = dateOfBirth;
-    profileDetails.about = about;
-    profileDetails.gender = gender;
-    profileDetails.contactNumber = contactNumber;
-    await profileDetails.save();
+    // Find user by ID and populate additionalDetails
+    const userDetails = await User.findById(userId).populate(
+      "additionalDetails"
+    );
+
+    // If user not found, handle accordingly
+    if (!userDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update user details
+    userDetails.firstName = firstName;
+    userDetails.lastName = lastName;
+
+    // Update or create additionalDetails
+    if (userDetails.additionalDetails) {
+      // If additionalDetails already exists, update it
+      userDetails.additionalDetails.dateOfBirth = dateOfBirth;
+      userDetails.additionalDetails.gender = gender;
+      userDetails.additionalDetails.contactNumber = contactNumber;
+      userDetails.additionalDetails.about = about;
+
+      // Save updated additionalDetails
+      await userDetails.additionalDetails.save();
+    } else {
+      // If additionalDetails doesn't exist, create and associate it
+      const newAdditionalDetails = await Profile.create({
+        dateOfBirth,
+        gender,
+        contactNumber,
+        about,
+      });
+
+      // Associate newAdditionalDetails with userDetails
+      userDetails.additionalDetails = newAdditionalDetails._id;
+    }
+
+    // Save updated userDetails
+    await userDetails.save();
+
+    // Populate additionalDetails in userDetails
+    await userDetails.populate("additionalDetails");
 
     return res.status(200).json({
       success: true,
       message: "Profile Updated Successfully",
-      profileDetails,
+      userDetails,
     });
   } catch (err) {
+    console.error("Error updating profile:", err);
     return res.status(500).json({
-      success: true,
+      success: false,
       message: "Profile cannot be updated",
     });
   }
@@ -64,7 +107,7 @@ async function deleteAccount(req, res) {
 
     //delete User model
     const deletedUser = await User.findByIdAndDelete(id);
-    console.log("fine")
+    console.log("fine");
     //send response
     return res.status(200).json({
       success: true,
@@ -82,26 +125,27 @@ async function deleteAccount(req, res) {
 
 async function updateDisplayPicture(req, res) {
   try {
-    const file =await req.files.file;
+    const file = await req.files.file;
     const userId = req.user.id;
-    
+
     const response = await uploadImageToCloudinary(
       file,
       process.env.FOLDER_NAME
     );
-    console.log(response)
+    console.log(response);
     const updatedProfile = await User.findByIdAndUpdate(
-      userId, 
+      userId,
       { image: response.secure_url },
       { new: true }
     );
+    console.log("LE re user", updatedProfile);
     res.status(200).json({
       success: true,
       message: `Image Updated successfully`,
       data: updatedProfile,
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: err.message,
@@ -152,4 +196,10 @@ async function getAllUserDetails(req, res) {
   }
 }
 
-module.exports = { updateProfile, deleteAccount, getAllUserDetails,updateDisplayPicture,getEnrolledCourses}
+module.exports = {
+  updateProfile,
+  deleteAccount,
+  getAllUserDetails,
+  updateDisplayPicture,
+  getEnrolledCourses,
+};

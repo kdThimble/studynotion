@@ -15,11 +15,11 @@ const {
 
 // Delete User Account
 router.delete("/deleteAccount", auth, deleteAccount);
-router.put("/updateProfile", auth, updateProfile);
+router.put("/updateprofile", auth, updateProfile);
 router.get("/getUserDetails", auth, getAllUserDetails);
 
 // Get Enrolled Courses
 router.get("/getEnrolledCourses", auth, getEnrolledCourses);
-router.put("/updateDisplayPicture", auth, updateDisplayPicture);
+router.put("/updatedisplaypicture", auth, updateDisplayPicture);
 
 module.exports = router;

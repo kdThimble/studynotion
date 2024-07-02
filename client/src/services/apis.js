@@ -12,4 +12,11 @@ export const endpoints = {
   RESETPASSWORD_API: BASE_URL + "/auth/reset-password",
 }
 
-export const CONTACT_US_API= BASE_URL+'/reach/contact'
+export const CONTACT_US_API = BASE_URL + '/reach/contact'
+
+export const settingsEndpoints = {
+  UPDATE_DISPLAY_PICTURE_API: BASE_URL + "/profile/updatedisplaypicture",
+  UPDATE_PROFILE_API: BASE_URL + "/profile/updateprofile",
+  CHANGE_PASSWORD_API: BASE_URL + "/auth/changepassword",
+  DELETE_PROFILE_API: BASE_URL + "/profile/deleteaccount",
+};

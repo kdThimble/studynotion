@@ -5,6 +5,8 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const Profile = require("../models/Profile");
 const jwt = require("jsonwebtoken");
+const passwordUpdated = require("../mail/templates/PasswordUpdate");
+const mailSender = require("../utils/mailsender"); 
 
 //send OTP
 async function sendOTP(req, res) {
@@ -234,7 +236,7 @@ async function changePassword(req, res) {
     const userDetails = await User.findById(req.user.id);
 
     // Get old password, new password, and confirm new password from req.body
-    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
 
     // Validate old password
     const isPasswordMatch = await bcrypt.compare(
@@ -249,13 +251,7 @@ async function changePassword(req, res) {
     }
 
     // Match new password and confirm new password
-    if (newPassword !== confirmNewPassword) {
-      // If new password and confirm new password do not match, return a 400 (Bad Request) error
-      return res.status(400).json({
-        success: false,
-        message: "The password and confirm password does not match",
-      });
-    }
+   
 
     // Update password
     const encryptedPassword = await bcrypt.hash(newPassword, 10);
@@ -267,7 +263,7 @@ async function changePassword(req, res) {
 
     // Send notification email
     try {
-      const emailResponse = await sendMail(
+      const emailResponse = await mailSender(
         updatedUserDetails.email,
         "Password Update Confirmation",
         passwordUpdated(

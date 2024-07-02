@@ -1,9 +1,39 @@
-import React from 'react'
+import React from "react";
+import { IoIosArrowBack } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ProfileUpdate from "../Settings/ProfileUpdate";
+import DeleteAccount from "../Settings/DeleteAccount";
+import ChangeProfilePicture from "../Settings/ChangeProfilePicture";
+import ChangePassword from "../Settings/ChangePassword";
 
-const Settings = () => {
+function Settings() {
+
+  const navigate = useNavigate();
+
   return (
-    <div>Settings</div>
-  )
+    <div className=" p-7 flex flex-col gap-5 w-[70%] mx-auto">
+      <div
+        onClick={() => navigate("/dashboard/my-profile")}
+        className="flex gap-2 items-center text-richblack-300 cursor-pointer"
+      >
+        <IoIosArrowBack />
+        <p className="text-sm">Back</p>
+      </div>
+      <h1 className="text-3xl text-center font-bold tracking-wider text-richblack-5">
+        Edit Profile
+      </h1>
+      <div className="min-w-[70%] mx-auto flex flex-col gap-3 ">
+        {/* section 1 */}
+        <ChangeProfilePicture/>
+      
+
+        <ProfileUpdate />
+        <ChangePassword/>
+        <DeleteAccount />
+      </div>
+    </div>
+  );
 }
 
-export default Settings
+export default Settings;

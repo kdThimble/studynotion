@@ -34,7 +34,7 @@ router.post("/signup", signup);
 router.post("/sendotp", sendOTP);
 
 // Route for Changing the password
-router.post("/changepassword", auth, changePassword);
+router.put("/changepassword", auth, changePassword);
 
 // ********************************************************************************************************
 //                                      Reset Password

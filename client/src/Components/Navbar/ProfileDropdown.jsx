@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import { React, useState } from "react";
 import { useSelector } from "react-redux";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { useDispatch } from "react-redux";
@@ -21,7 +21,7 @@ const style = {
   border: "1px solid #000",
   boxShadow: 24,
   p: 4,
-  borderRadius:3
+  borderRadius: 3,
 };
 
 function ProfileDropdown() {
@@ -58,7 +58,9 @@ function ProfileDropdown() {
         >
           Dashboard
         </button>
-        <button className="text-white text-sm uppercase " onClick={handleOpen}>Logout</button>
+        <button className="text-white text-sm uppercase " onClick={handleOpen}>
+          Logout
+        </button>
         <Modal
           open={open}
           onClose={handleClose}
@@ -66,12 +68,27 @@ function ProfileDropdown() {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2" className="text-richblack-25">
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              className="text-richblack-25"
+            >
               Are you Sure , you will be Logged out of your Account ?
             </Typography>
             <div className="flex w-full gap-4 mt-4">
-              <button className="px-4 hover:scale-95 transition-all duration-200 ease-in-out py-2 bg-yellow-50 font-semibold text-black rounded-md" onClick={()=>dispatch(logout(navigate))}>Logout</button>
-              <button className="text-richblack-25" onClick={()=>handleClose()}>Cancel</button>
+              <button
+                className="px-4 hover:scale-95 transition-all duration-200 ease-in-out py-2 bg-yellow-50 font-semibold text-black rounded-md"
+                onClick={() => dispatch(logout(navigate))}
+              >
+                Logout
+              </button>
+              <button
+                className="text-richblack-25"
+                onClick={() => handleClose()}
+              >
+                Cancel
+              </button>
             </div>
           </Box>
         </Modal>
