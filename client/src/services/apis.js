@@ -20,3 +20,6 @@ export const settingsEndpoints = {
   CHANGE_PASSWORD_API: BASE_URL + "/auth/changepassword",
   DELETE_PROFILE_API: BASE_URL + "/profile/deleteaccount",
 };
+export const profileEndpoints = {
+  GET_USER_ENROLLED_COURSES_API: BASE_URL + "/profile/getenrolledcourses",
+};
