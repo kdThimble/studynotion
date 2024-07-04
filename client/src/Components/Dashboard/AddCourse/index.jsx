@@ -1,19 +1,25 @@
 import React from "react";
 import RenderSteps from "./RenderSteps";
+import { AiTwotoneThunderbolt } from "react-icons/ai";
 
 function AddCourse() {
   return (
-    <div className="text-richblack-5 p-6  w-[80%] mx-auto">
+    <div className="text-richblack-5 p-6  w-[100%] mx-auto">
       <h1 className="text-3xl">Add Course</h1>
       <div className="flex gap-6 mt-6 justify-between">
-        <div className="">
+        <div className="w-[75%]">
           <div>
             <RenderSteps />
           </div>
         </div>
-        <div className="w-[50%]">
-          <p>Code Upload Tips</p>
-          <ul>
+        <div className="w-[40%] h-fit p-5 bg-richblack-800 rounded-xl">
+          <div className="flex items-center">
+            <AiTwotoneThunderbolt size={20} className="text-yellow-25 " />
+
+            <p className="font-semibold text-xl h-fit">Code Upload Tips</p>
+          </div>
+
+          <ul className="list-disc pl-4 mt-2 text-sm gap-2 flex flex-col text-richblack-200">
             <li>Set the Course Price option or make it free.</li>
             <li>Standard size for the course thumbnail is 1024x576</li>
             <li>Video section controls the course overview video.</li>

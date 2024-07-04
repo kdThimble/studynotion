@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { GoPlusCircle } from "react-icons/go";
 import { getUserEnrolledCourses } from "../../services/operations/profileAPI";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaRupeeSign } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
+import { setEditCourse ,setCourse} from "../../redux/slices/courseSlice";
 
 function MyCourses() {
-  const { token } = useSelector((state) => state.auth);
+    const { token } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
   const [enrolledCourses, setEnrolledCourses] = useState(null);
 
@@ -24,6 +28,14 @@ function MyCourses() {
   useEffect(() => {
     getEnrolledCourses();
   }, []);
+    
+    const editHandler = (course) => { 
+        console.log(course);
+        dispatch(setEditCourse(true));
+        dispatch(setCourse(course));
+        navigate(`/dashboard/add-course`);
+
+    };
 
   return (
     <div className="text-richblack-5 p-6 w-11/12">
@@ -72,7 +84,7 @@ function MyCourses() {
                     <FaRupeeSign /> {course.price}
                   </div>
                   <div className="w-[15%] flex items-center gap-2 text-xl text-richblack-200">
-                    <MdModeEdit />
+                    <MdModeEdit className=" cursor-pointer" onClick={()=>editHandler(course)} />
                     <RiDeleteBin5Line />
                   </div>
                 </div>
