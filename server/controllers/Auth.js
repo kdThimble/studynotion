@@ -1,66 +1,66 @@
 //sendOTP
-const OTP = require("../models/OTP")
-const User = require("../models/User")
+const OTP = require("../models/OTP");
+const User = require("../models/User");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const Profile = require("../models/Profile");
 const jwt = require("jsonwebtoken");
 const passwordUpdated = require("../mail/templates/PasswordUpdate");
-const mailSender = require("../utils/mailsender"); 
+const mailSender = require("../utils/mailsender");
 
 //send OTP
 async function sendOTP(req, res) {
-    try {
-      //fetch email from req body
-      const { email } = req.body;
-      //check if user exist or not
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-        return res.status(401).json({
-          success: false,
-          message: "User already exists , Please Login",
-        });
-      }
-      //generate otp
-      var otp = otpGenerator.generate(6, {
+  try {
+    //fetch email from req body
+    const { email } = req.body;
+    //check if user exist or not
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(401).json({
+        success: false,
+        message: "User already exists , Please Login",
+      });
+    }
+    //generate otp
+    var otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+    const result = await OTP.findOne({ otp });
+    console.log("Result is Generate OTP Func");
+    console.log("OTP", otp);
+    console.log("Result", result);
+    while (result) {
+      otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
       });
-      const result = await OTP.findOne({ otp });
-      console.log("Result is Generate OTP Func");
-      console.log("OTP", otp);
-      console.log("Result", result);
-      while (result) {
-        otp = otpGenerator.generate(6, {
-           upperCaseAlphabets: false,
-        lowerCaseAlphabets: false,
-        specialChars: false,
-        });
-      }
-  
-      //creating entry in DB
-      const otpBody = await OTP.create({
-        email,
-        otp,
-      });
-      console.log("otp body:", otpBody);
-  
-      res.status(200).json({
-        success: true,
-        message: "OTP Sent Successfully",
-        otp,
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({
-        success: false,
-        message: err.message,
-      });
     }
-  }
 
-// signup 
+    //creating entry in DB
+    const otpBody = await OTP.create({
+      email,
+      otp,
+    });
+    console.log("otp body:", otpBody);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP Sent Successfully",
+      otp,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+}
+
+// signup
 
 async function signup(req, res) {
   try {
@@ -165,7 +165,6 @@ async function signup(req, res) {
   }
 }
 
-
 //login
 async function login(req, res) {
   try {
@@ -197,7 +196,7 @@ async function login(req, res) {
         accountType: user.accountType,
       };
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "2h",
+        expiresIn: "2d",
       });
       user.token = token;
       user.password = undefined;
@@ -251,7 +250,6 @@ async function changePassword(req, res) {
     }
 
     // Match new password and confirm new password
-   
 
     // Update password
     const encryptedPassword = await bcrypt.hash(newPassword, 10);

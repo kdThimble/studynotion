@@ -1,37 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { DevTool } from "@hookform/devtools";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCourseCategories } from "../../../services/operations/courseDetailsAPI";
-
+import {
+  fetchCourseCategories,
+  editCourseDetails,
+  addCourseDetails,
+} from "../../../services/operations/courseDetailsAPI";
 import { HiOutlineCurrencyRupee } from "react-icons/hi";
+import { setStep, setCourse } from "../../../redux/slices/courseSlice";
 import IconBtn from "../../Reusable/IconBtn";
-import RequirementField from "./RequirementFeild";
+// import RequirementField from "./RequirementField";
 
-const CourseInformation = () => {
+function CourseInformation() {
   const {
     handleSubmit,
-    register,
     formState: { errors },
+    register,
     setValue,
     getValues,
+    control,
   } = useForm();
+
+  const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { course, editCourse } = useSelector((state) => state.course);
   const [loading, setLoading] = useState(false);
-  const [courseCategories, setCourseCategories] = useState([]);
+  const [courseCategory, setCourseCategory] = useState([]);
+
+  //IMAGE RELATED
+  const fileInputRef = useRef(null);
+  const [previewSource, setPreviewSource] = useState(null);
+
+  function previewFile(file) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setPreviewSource(reader.result);
+    };
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setValue("courseImage", file); // Set the file to the form state
+      previewFile(file);
+    }
+  };
 
   useEffect(() => {
-    const getCategory = async () => {
+   
+    const getCategories = async () => {
       setLoading(true);
       const categories = await fetchCourseCategories();
       if (categories.length > 0) {
-        setCourseCategories(categories);
+        setCourseCategory(categories);
       }
-
       setLoading(false);
     };
-
-    getCategory();
 
     if (editCourse) {
       setValue("courseTitle", course.courseName);
@@ -43,9 +70,10 @@ const CourseInformation = () => {
       setValue("courseRequirements", course.instructions);
       setValue("courseImage", course.thumbnail);
     }
+
+    getCategories();
   }, []);
 
-  console.log(courseCategories);
   const isFormUpdated = () => {
     const currentValues = getValues();
     if (
@@ -56,13 +84,15 @@ const CourseInformation = () => {
       //currentValues.courseTags.toString() !== course.tag.toString() ||
       currentValues.courseBenefits !== course.whatYouWillLearn ||
       currentValues.courseCategory._id !== course.category._id ||
-      //currentValues.courseImage !== course.thumbnail ||
-      currentValues.courseRequirements.toString() !==
-        course.instructions.toString()
+      (currentValues.courseImage &&
+        currentValues.courseImage !== course.thumbnail)
+      // currentValues.courseRequirements.toString() !==
+      //   course.instructions.toString()
     )
       return true;
     else return false;
   };
+
   const onSubmit = async (data) => {
     if (editCourse) {
       if (isFormUpdated()) {
@@ -90,32 +120,33 @@ const CourseInformation = () => {
           formData.append("category", data.courseCategory);
         }
 
-        if (
-          currentValues.courseRequirements.toString() !==
-          course.instructions.toString()
-        ) {
-          formData.append(
-            "instructions",
-            JSON.stringify(data.courseRequirements)
-          );
+        // if (
+        //   currentValues.courseRequirements.toString() !==
+        //   course.instructions.toString()
+        // ) {
+        //   formData.append(
+        //     "instructions",
+        //     JSON.stringify(data.courseRequirements)
+        //   );
+        // }
+        if (currentValues.courseImage !== course.thumbnail) {
+          formData.append("thumbnail", data.courseImage);
         }
 
         setLoading(true);
         const result = await editCourseDetails(formData, token);
         setLoading(false);
+        console.log("result is", result);
         if (result) {
-          setStep(2);
+          dispatch(setStep(2));
           dispatch(setCourse(result));
         }
       } else {
-        toast.error("NO Changes made so far");
+        toast.error("No Changes made so far");
       }
-      console.log("PRINTING FORMDATA", formData);
-      console.log("PRINTING result", result);
-
       return;
     }
-
+    console.log(data);
     //create a new course
     const formData = new FormData();
     formData.append("courseName", data.courseTitle);
@@ -125,13 +156,14 @@ const CourseInformation = () => {
     formData.append("category", data.courseCategory);
     formData.append("instructions", JSON.stringify(data.courseRequirements));
     formData.append("status", "draft");
+    if (data.courseImage) {
+      formData.append("thumbnail", data.courseImage);
+    }
 
     setLoading(true);
-    console.log("BEFORE add course API call");
-    console.log("PRINTING FORMDATA", formData);
     const result = await addCourseDetails(formData, token);
     if (result) {
-      setStep(2);
+      dispatch(setStep(1));
       dispatch(setCourse(result));
     }
     setLoading(false);
@@ -140,140 +172,160 @@ const CourseInformation = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="rounded-md border-richblack-700 bg-richblack-800 p-6 space-y-8"
-    >
-      <div>
-        <label className="lable-style" htmlFor="courseTitle">
-          Course Title<sup>*</sup>
-        </label>
-        <input
-          id="courseTitle"
-          placeholder="Enter Course Title"
-          {...register("courseTitle", { required: true })}
-          className="w-full form-style mt-2"
-        />
-        {errors.courseTitle && <span>Course Title is Required**</span>}
-      </div>
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="rounded-md border-richblack-700 bg-richblack-800 p-6  space-y-8"
+      >
+        <div className="flex flex-col gap-2">
+          <label htmlFor="courseTitle" className="lable-style">
+            Course Title<sup>*</sup>
+          </label>
+          <input
+            id="courseTitle"
+            placeholder="Enter Course Title"
+            {...register("courseTitle", { required: true })}
+            className="w-full form-style"
+          />
+          {errors.courseTitle && <span>Course Title is Required**</span>}
+        </div>
 
-      <div>
-        <label className="lable-style" htmlFor="courseShortDesc">
-          Course Short Description<sup>*</sup>
-        </label>
-        <textarea
-          id="courseShortDesc"
-          placeholder="Enter Description"
-          {...register("courseShortDesc", { required: true })}
-          className="min-h-[140px] w-full form-style mt-2"
-        />
-        {errors.courseShortDesc && (
-          <span>Course Description is required**</span>
-        )}
-      </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="courseShortDesc" className="lable-style">
+            Course Short Description<sup>*</sup>
+          </label>
+          <textarea
+            id="courseShortDesc"
+            placeholder="Enter Description"
+            {...register("courseShortDesc", { required: true })}
+            className="min-h-[140px] w-full form-style"
+          />
+          {errors.courseShortDesc && (
+            <span>Course Description is required**</span>
+          )}
+        </div>
 
-      <div className="relative">
-        <label className="lable-style" htmlFor="coursePrice">
-          Course Price<sup>*</sup>
-        </label>
-        <input
-          id="coursePrice"
-          placeholder="Enter Course Price"
-          {...register("coursePrice", {
-            required: true,
-            valueAsNumber: true,
-          })}
-          className="w-full form-style mt-2 pl-8"
-        />
-        <HiOutlineCurrencyRupee
-          size={20}
-          className="absolute top-[57%] left-2 text-richblack-50"
-        />
-        {errors.coursePrice && <span>Course Price is Required**</span>}
-      </div>
+        <div className="relative flex flex-col gap-2">
+          <label htmlFor="coursePrice lable-style">
+            Course Price<sup>*</sup>
+          </label>
+          <input
+            id="coursePrice"
+            placeholder="Enter Course Price"
+            {...register("coursePrice", {
+              required: true,
+              valueAsNumber: true,
+            })}
+            className="w-full form-style pl-10"
+          />
+          <HiOutlineCurrencyRupee
+            size={20}
+            className="absolute top-[57%] left-2 text-richblack-50"
+          />
+          {errors.coursePrice && <span>Course Price is Required**</span>}
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="lable-style" htmlFor="courseCategory">
-          Course Category<sup>*</sup>
-        </label>
-        <select
-          className="form-style"
-          id="courseCategory"
-          defaultValue=""
-          {...register("courseCategory", { required: true })}
-        >
-          <option className="form-style mt-2" value="" disabled>
-            Choose a Category
-          </option>
-
-          {!loading &&
-            courseCategories.map((category, index) => (
-              <option key={index} value={category?._id}>
-                {category?.name}
-              </option>
-            ))}
-        </select>
-        {errors.courseCategory && <span>Course Category is Required</span>}
-      </div>
-
-      {/* create a custom component for handling tags input */}
-      {/* <ChipInput
-            label="Tags"
-            name="courseTags"
-            placeholder="Enter tags and press enter"
-            register={register}
-            errors={errors}
-            setValue={setValue}
-            getValues = {getValues}
-        /> */}
-
-      {/* create a component for uploading and showing preview of media */}
-      {/* <Upload
-            name=
-            label=
-            register={}
-            errors=
-            setValue={}
-            /> */}
-
-      {/*     Benefits of the Course */}
-      <div>
-        <label className="lable-style">
-          Benefits of the course<sup>*</sup>
-        </label>
-        <textarea
-          id="coursebenefits"
-          placeholder="Enter Benefits of the course"
-          {...register("courseBenefits", { required: true })}
-          className="min-h-[130px] w-full form-style mt-2"
-        />
-        {errors.courseBenefits && (
-          <span>Benefits of the course are required**</span>
-        )}
-      </div>
-
-      <RequirementField
-        name="courseRequirements"
-        label="Requirements/Instructions"
-        register={register}
-        errors={errors}
-        setValue={setValue}
-        getValues={getValues}
-      />
-      <div className="flex flex-wrap  gap-4">
-        {editCourse && (
-          <button
-            onClick={() => dispatch(setStep(2))}
-            className="flex items-center px-6 rounded-md hover:scale-95 transition-all duration-200 gap-x-2 bg-richblack-300"
+        <div className="flex flex-col gap-2">
+          <label htmlFor="courseCategory" className="lable-style">
+            Course Category<sup>*</sup>
+          </label>
+          <select
+            id="courseCategory"
+            className="form-style"
+            defaultValue=""
+            {...register("courseCategory", { required: true })}
           >
-            Continue Without Saving
-          </button>
-        )}
+            <option value="" disabled>
+              Choose a Category
+            </option>
 
-        <IconBtn text={!editCourse ? "Next" : "Save Changes"} />
-      </div>
-    </form>
+            {!loading &&
+              courseCategory.map((category, index) => (
+                <option key={index} value={category?._id}>
+                  {category?.name}
+                </option>
+              ))}
+          </select>
+          {errors.courseCategory && <span>Course Category is Required</span>}
+        </div>
+
+        {/* For uploading and showing preview of Thumbnail */}
+
+        <div className="w-full p-4 h-fit form-style rounded-md ">
+          <div className="w-full flex flex-col gap-6">
+            {(previewSource || course?.thumbnail) && (
+              <img
+                src={previewSource || course?.thumbnail}
+                className="w-full h-full object-cover"
+                alt="Preview"
+              />
+            )}
+            {(!previewSource || course?.thumbnail) && (
+              <div className="w-full text-richblack-300">
+                Click
+                <input
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  type="file"
+                  name="courseImage"
+                  className="hidden"
+                  accept="image/*"
+                />
+                <span
+                  className="text-yellow-50 cursor-pointer "
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  {" "}
+                  Browse
+                </span>{" "}
+                to choose an image for thumbnail
+              </div>
+            )}
+          </div>
+          {errors.courseImage && <span>Thumbnail Is required**</span>}
+        </div>
+
+        {/*     Benefits of the Course */}
+        <div className="flex flex-col gap-2">
+          <label className="lable-style">
+            Benefits of the course<sup>*</sup>
+          </label>
+          <textarea
+            id="coursebenefits"
+            placeholder="Enter Benefits of the course"
+            {...register("courseBenefits", { required: true })}
+            className="min-h-[130px] w-full form-style"
+          />
+          {errors.courseBenefits && (
+            <span>Benefits of the course are required**</span>
+          )}
+        </div>
+
+        {/* <RequirementField
+          name="courseRequirements"
+          label="Requirements/Instructions"
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          getValues={getValues}
+        /> */}
+        <div className="flex gap-4 flex-wrap">
+          {editCourse && (
+            <button
+              onClick={() => dispatch(setStep(2))}
+              className="flex items-center px-6 py-2 hover:scale-95 transition-all duration-150 ease-in-out rounded-md bg-richblack-600"
+            >
+              Continue Without Saving
+            </button>
+          )}
+
+          {editCourse && <IconBtn text="Save Changes" />}
+          {!editCourse && <IconBtn text="Next" />}
+        </div>
+      </form>
+      <DevTool control={control} />
+    </>
   );
-};
+}
 
 export default CourseInformation;

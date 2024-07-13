@@ -1,11 +1,13 @@
 import React from "react";
 import RenderSteps from "./RenderSteps";
 import { AiTwotoneThunderbolt } from "react-icons/ai";
+import { useSelector } from "react-redux";
 
 function AddCourse() {
+  const { editCourse } = useSelector((state) => state.course);
   return (
     <div className="text-richblack-5 p-6  w-[100%] mx-auto">
-      <h1 className="text-3xl">Add Course</h1>
+      <h1 className="text-3xl">{editCourse ? "Edit Course" : "Add Course"}</h1>
       <div className="flex gap-6 mt-6 justify-between">
         <div className="w-[75%]">
           <div>

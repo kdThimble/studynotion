@@ -17,6 +17,7 @@ import ExploreMore from "../Components/Home/ExploreMore";
 const Home = () => {
   return (
     <div className="w-full">
+      
       {/* //section 1 */}
       <div className="relative w-11/12 mx-auto flex flex-col max-w-maxContent items-center text-white justify-between">
         <Link to="/signup">
@@ -98,8 +99,8 @@ const Home = () => {
             gradientimg={gradientblue}
           />
         </div>
-       
-        <ExploreMore/>
+
+        <ExploreMore />
       </div>
 
       {/* Section 2 */}
@@ -121,12 +122,12 @@ const Home = () => {
           </div>
         </div>
         <TimeLine />
-        <LearningLanguageSection/>
+        <LearningLanguageSection />
       </div>
 
       {/* section 3 */}
       <div className="w-11/12 mx-auto max-w-maxContent flex-col items-center justify-between gap-8 first-letter bg-richblack-900 text-white">
-        <InstructorSection/>
+        <InstructorSection />
 
         <h2 className="text-center text-4xl font-semobold mt-10">
           review from Other Learners
@@ -134,7 +135,7 @@ const Home = () => {
         {/* Review Slider here */}
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 };

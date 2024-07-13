@@ -1,7 +1,7 @@
 
 import './App.css'
-import React from 'react'
-import {Routes, Route} from 'react-router-dom'
+import React, { useEffect } from 'react'
+import {Routes, Route, useNavigate} from 'react-router-dom'
 import Home from './Pages/Home'
 import Navbar from './Components/Navbar/Navbar'
 import Login from './Pages/Login'
@@ -19,8 +19,54 @@ import Settings from './Components/Dashboard/Settings'
 import MyWishlist from './Components/Dashboard/MyWishlist'
 import MyCourses from './Components/Dashboard/MyCourses'
 import AddCourse from './Components/Dashboard/AddCourse'
+import {jwtDecode} from 'jwt-decode'
+import { useDispatch, useSelector } from 'react-redux'
 
 function App() {
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+
+  useEffect(() => {
+    // Function to logout user
+    const logoutUser = () => {
+      dispatch(setToken(null));
+      dispatch(setUser(null));
+      dispatch(resetCart());
+      localStorage.removeItem("token"); // Clear token from local storage
+      localStorage.removeItem("user"); // Clear user from local storage
+      navigate("/login");
+    };
+
+    const checkTokenExpiration = () => {
+      if (!token) {
+        // Token not found, logout user
+        logoutUser();
+        return;
+      }
+
+      try {
+        const decodedToken = jwtDecode(token); // Decode token
+        const currentTime = Date.now() / 1000; // Convert current time to seconds
+        // console.log(decodedToken)
+
+        if (decodedToken.exp < currentTime) {
+          // Token expired, logout user
+          logoutUser();
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        logoutUser();
+      }
+    };
+
+    // Periodically checking token expiration(every ten minute)
+    const intervalId = setInterval(checkTokenExpiration, 600000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [token]);
  
 
   return (

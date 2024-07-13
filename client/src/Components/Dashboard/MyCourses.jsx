@@ -6,12 +6,15 @@ import { FaRupeeSign } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import { setEditCourse ,setCourse} from "../../redux/slices/courseSlice";
+import { FaCheckCircle } from "react-icons/fa";
+import { setEditCourse } from "../../redux/slices/courseSlice";
+import { GoClockFill } from "react-icons/go";
+import { setCourse } from "../../redux/slices/courseSlice";
 
 function MyCourses() {
-    const { token } = useSelector((state) => state.auth);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [enrolledCourses, setEnrolledCourses] = useState(null);
 
@@ -23,25 +26,29 @@ function MyCourses() {
       console.log("Unable to Fetch Enrolled Courses");
     }
   };
-  console.log(enrolledCourses);
+
+  function editHandler(course) {
+    dispatch(setEditCourse(true));
+    dispatch(setCourse(course));
+    navigate("/dashboard/add-course");
+  }
 
   useEffect(() => {
     getEnrolledCourses();
   }, []);
-    
-    const editHandler = (course) => { 
-        console.log(course);
-        dispatch(setEditCourse(true));
-        dispatch(setCourse(course));
-        navigate(`/dashboard/add-course`);
-
-    };
 
   return (
     <div className="text-richblack-5 p-6 w-11/12">
       <div className="flex justify-between">
         <h1 className="text-3xl">My Courses</h1>
-        <button className="flex font-semibold items-center hover:scale-95 transition-all duration-100 ease-out gap-1 bg-yellow-100 text-black px-4 py-2 rounded-md">
+        <button
+          onClick={() => {
+            dispatch(setEditCourse(false));
+            dispatch(setCourse(null));
+            navigate("/dashboard/add-course")
+          }}
+          className="flex font-semibold items-center hover:scale-95 transition-all duration-100 ease-out gap-1 bg-yellow-100 text-black px-4 py-2 rounded-md"
+        >
           <GoPlusCircle size={20} />
           <p>New</p>
         </button>
@@ -66,26 +73,44 @@ function MyCourses() {
               {enrolledCourses.map((course, index) => (
                 <div key={index} className="flex items-center">
                   <div className="flex gap-4 w-[55%]">
-                    <img
-                      className="w-44 h-32 rounded-md object-cover"
-                      src={course.thumbnail}
-                    />
-                    <div className="flex gap-1 flex-col">
+                    <div className="w-60  h-32">
+                      <img
+                        className="w-full h-full rounded-md object-cover"
+                        src={course.thumbnail}
+                      />
+                    </div>
+
+                    <div className="flex gap-3 flex-col w-full">
                       <p className="text-xl font-semibold">
                         {course.courseName}
                       </p>
-                      <p className="text-sm text-richblack-300">
+                      <div className="text-sm text-richblack-300 w-11/12">
                         {course.courseDescription}
-                      </p>
+                      </div>
+
+                      {course.status === "draft" ? (
+                        <div className="bg-richblack-700 mt-2 justify-center flex items-center gap-2 text-red-400 rounded-full w-fit px-2 py-[4px] text-sm">
+                          <GoClockFill />
+                          Draft
+                        </div>
+                      ) : (
+                        <div className="bg-richblack-700 flex items-center gap-2 text-yellow-50 rounded-full w-fit px-2 py-[4px] text-sm">
+                          <FaCheckCircle />
+                          Published
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="w-[15%]">{course.category[0].name}</div>
+                  <div className="w-[15%]">{course.category.name}</div>
                   <div className="w-[15%] flex items-center gap-1 text-yellow-100">
                     <FaRupeeSign /> {course.price}
                   </div>
                   <div className="w-[15%] flex items-center gap-2 text-xl text-richblack-200">
-                    <MdModeEdit className=" cursor-pointer" onClick={()=>editHandler(course)} />
-                    <RiDeleteBin5Line />
+                    <MdModeEdit
+                      className="cursor-pointer"
+                      onClick={() => editHandler(course)}
+                    />
+                    <RiDeleteBin5Line className="cursor-pointer" />
                   </div>
                 </div>
               ))}
