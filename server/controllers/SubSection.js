@@ -110,24 +110,15 @@ async function createSubSection(req, res) {
 
 async function updateSubSection(req, res) {
   try {
-    const {
-      timeDuration,
-      title,
-      description,
-      subSectionId,
-    } = req.body;
-    const video = req.files.video;
-    if (
-      !timeDuration ||
-      !title ||
-      !description ||
-      !subSectionId
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Incomplete Fields",
-      });
-    }
+    const { title, description, subSectionId, sectionId } = req.body;
+    let video = req.body.video;
+
+    // if (!title || !description || !subSectionId) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Incomplete Fields",
+    //   });
+    // }
 
     const subSection = await SubSection.findById(subSectionId);
 
@@ -138,36 +129,40 @@ async function updateSubSection(req, res) {
       });
     }
 
-    if (video) {
-     
+    // Check if video is a URL or file
+    if (req.files && req.files.video) {
       const uploadedVideo = await uploadImageToCloudinary(
-        video,
-        process.env.FOLDER_NAME,
-        50
+        req.files.video,
+        process.env.FOLDER_NAME
       );
       subSection.videoURL = uploadedVideo.secure_url;
-
-      
+    } else if (video && !video.startsWith("http")) {
+      // Handle case when video is not a valid URL
+      return res.status(400).json({
+        success: false,
+        message: "Invalid video URL",
+      });
+    } else if (video) {
+      subSection.videoURL = video;
     }
 
     if (title !== undefined) {
-      subSection.title = title
+      subSection.title = title;
     }
     if (description !== undefined) {
-      subSection.description = description
+      subSection.description = description;
     }
-    if (timeDuration !== undefined) {
-      subSection.timeDuration = timeDuration
-    }
-    
-    // subSection.timeDuration = updatedTimeDuration;
 
     await subSection.save();
+    const updatedSection = await Section.findById(sectionId).populate(
+      "subSection"
+    );
 
     return res.status(200).json({
       success: true,
       message: "SubSection updated successfully",
       updatedSubSection: subSection,
+      data: updatedSection,
     });
   } catch (err) {
     console.error(err);
