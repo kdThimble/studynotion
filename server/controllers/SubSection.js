@@ -64,12 +64,14 @@ async function createSubSection(req, res) {
     const video = req.files.video;
     console.log(video)
     //validate
-    if (!timeDuration || !title || !description || !video || !sectionId) {
+    
+    if ( !title || !description || !video || !sectionId) {
       return res.status(400).json({
         success: false,
         message: "Field Missing",
       });
     }
+    
     //upload to cloudinary video for getting URL
     const uploadedVideo = await uploadImageToCloudinary(
       video,
@@ -95,7 +97,7 @@ async function createSubSection(req, res) {
     return res.status(200).json({
       success: true,
       message: "SubSection Created Successfully",
-      updatedSection,
+      data:updatedSection,
       newSubSection,
     });
   } catch (err) {
@@ -206,8 +208,7 @@ async function deleteSubSection(req, res) {
     return res.status(200).json({
       success: true,
       message: "SubSection Deleted successfully",
-      updatedSection,
-      deletedSubSection,
+      data: updatedSection,
     });
   } catch (err) {
     return res.status(500).json({

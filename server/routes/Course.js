@@ -30,7 +30,7 @@ const {
   createSubSection,
   updateSubSection,
   deleteSubSection,
-} = require("../controllers/Subsection");
+} = require("../controllers/SubSection");
 
 // Rating Controllers Import
 const {
@@ -71,7 +71,7 @@ router.post("/createSubSection", auth, isInstructor, createSubSection);
 // Get all Registered Courses
 router.get("/getAllCourses", getAllCourses);
 // Get Details for a Specific Courses
-router.get("/getCourseDetails", getCourseDetails);
+router.post("/getCourseDetails", getCourseDetails);
 
 // ********************************************************************************************************
 //                                      Category routes (Only by Admin)

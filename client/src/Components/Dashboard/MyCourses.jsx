@@ -10,6 +10,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { setEditCourse } from "../../redux/slices/courseSlice";
 import { GoClockFill } from "react-icons/go";
 import { setCourse } from "../../redux/slices/courseSlice";
+import { getFullDetailsOfCourse } from "../../services/operations/courseDetailsAPI";
 
 function MyCourses() {
   const { token } = useSelector((state) => state.auth);
@@ -27,11 +28,17 @@ function MyCourses() {
     }
   };
 
-  function editHandler(course) {
-    dispatch(setEditCourse(true));
-    dispatch(setCourse(course));
-    navigate("/dashboard/add-course");
-  }
+  const getCourseDetail = async (courseId) => {
+    try {
+      const response = await getFullDetailsOfCourse(courseId, token);
+      console.log("response", response);
+      dispatch(setCourse(response));
+      dispatch(setEditCourse(true));
+      navigate("/dashboard/add-course");
+    } catch (error) {}
+  };
+
+ 
 
   useEffect(() => {
     getEnrolledCourses();
@@ -45,7 +52,7 @@ function MyCourses() {
           onClick={() => {
             dispatch(setEditCourse(false));
             dispatch(setCourse(null));
-            navigate("/dashboard/add-course")
+            navigate("/dashboard/add-course");
           }}
           className="flex font-semibold items-center hover:scale-95 transition-all duration-100 ease-out gap-1 bg-yellow-100 text-black px-4 py-2 rounded-md"
         >
@@ -108,7 +115,7 @@ function MyCourses() {
                   <div className="w-[15%] flex items-center gap-2 text-xl text-richblack-200">
                     <MdModeEdit
                       className="cursor-pointer"
-                      onClick={() => editHandler(course)}
+                      onClick={() => getCourseDetail(course._id)}
                     />
                     <RiDeleteBin5Line className="cursor-pointer" />
                   </div>
